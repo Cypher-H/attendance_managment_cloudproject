@@ -1,0 +1,26 @@
+
+
+.background-body {
+    height: 100% !important;
+    background-image: linear-gradient( to bottom,rgb(121, 226, 245), rgb(236, 228, 228)) ;
+    padding: 0px;
+    margin: 0px;
+}
+
+.paper-style {
+    width: inherit;
+    margin-right: 20%;
+    margin-left: 20% ;
+    display: inherit;
+    opacity: 0.8
+}
+
+.paper-style:hover {
+    opacity: 1;
+}
+
+.text-field-style {
+    display: inline-flex;
+    padding-left: 20px;
+    flex-direction: column;
+}

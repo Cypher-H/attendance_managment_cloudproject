@@ -1,21 +1,36 @@
-try {
-    const express = require('express')
-    const morgan = require('morgan')      
-} catch (error) {
-    console.error('Module Not Found Try Using npm install in terminal')
-    return;
-}
-
+const express = require('express')
+const morgan = require('morgan')  
+const cors = require('cors')
+const bodyParser = require('body-parser')
+const verifyToken = require('./verifyToken')
+const mongoose = require('mongoose')
+const config = require('./config')  
 
 const app = express()
-const port = 3000
+
+const authRouter = require('./auth')
 
 app.use(morgan('dev'))
+app.use(cors())
+app.use(bodyParser.json())
 
-app.get('/',(req,res,next)=>{
+
+mongoose.connect(config.mongoUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    autoIndex: true,
+    useCreateIndex: true
+  }).then((v)=>{
+    console.log('Mongoose connection established successfully')
+})
+
+app.get('/', verifyToken,(req,res,next)=>{
     res.json({test: 'Hello World'})
 })
 
-app.listen(port, ()=>{
-    console.log(`Server running at ${port}`)
+app.use(authRouter)
+
+app.listen(config.PORT, ()=>{
+    console.log(`Server running at ${config.PORT}`)
 })
