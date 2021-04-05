@@ -9,6 +9,7 @@ const config = require('./config')
 const app = express()
 
 const authRouter = require('./auth')
+const userCreate = require('./Routes/userCreate')
 
 app.use(morgan('dev'))
 app.use(cors())
@@ -29,7 +30,8 @@ app.get('/', verifyToken,(req,res,next)=>{
     res.json({test: 'Hello World'})
 })
 
-app.use(authRouter)
+app.use('/',authRouter)
+app.use('/',userCreate)
 
 app.listen(config.PORT, ()=>{
     console.log(`Server running at ${config.PORT}`)

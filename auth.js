@@ -3,9 +3,12 @@ const jsonwebtoken = require('jsonwebtoken')
 const bycryptjs = require('bcryptjs')
 const User = require('./Models/UserModel')
 const config = require('./config')
-
+const verifyToken = require('./verifyToken')
+const authtokens = require('./authTokens') 
+const UserModel = require('./Models/UserModel')
 
 const app = express.Router()
+
 
 app.post('/register', (req, res, next)=>{
     const { username, password } = req.body
@@ -15,13 +18,14 @@ app.post('/register', (req, res, next)=>{
             User.create({
                 username: username,
                 password: value,
-                role: 'student'
+                role: 'admin'
             })
             .then((doc)=>{
                 const token = jsonwebtoken.sign({id: doc._id}, config.secret, {
                     expiresIn: 3600
                 })
                 const decoded = jsonwebtoken.decode(token)
+                authtokens[token] = doc._id
                 res.status(200).json({auth: true, token: token, status: 'loggedIn', uid: doc._id, role: doc.role, exp: decoded.exp})
             })
             .catch((er)=>{
@@ -46,6 +50,7 @@ app.post('/login', (req, res, next)=>{
                         expiresIn: 3600 //86400
                     })
                     const decoded = jsonwebtoken.decode(token)
+                    authtokens[token] = doc._id
                     res.status(200).json({auth: true, token: token, status: 'loggedIn', uid: doc._id, role: doc.role, exp: decoded.exp})
                 }
                 else{
@@ -62,7 +67,34 @@ app.post('/login', (req, res, next)=>{
     }
 })
 
-app.get('/logout', function(req, res) {
+app.post('/passwordchange', verifyToken, (req, res, next)=>{
+    const { userId, password, newPassword } = req.body
+    console.log(req.body)
+    UserModel.findById(userId)
+    .then((doc)=>{
+        const isValid = bycryptjs.compareSync(password, doc.password)
+        if (isValid){
+            bycryptjs.hash(newPassword, 8)
+            .then((hashedPass)=>{
+                UserModel.updateOne({_id: doc._id}, {
+                    username: doc.username,
+                    password: hashedPass,
+                    role: doc.role
+                })
+                .then(()=>{
+                    res.status(200).json({message: 'Password Changed Successfully'})
+                })
+            })            
+        }
+        else{
+            res.status(200).json({auth: false, token: null, status: 'Incorrect Password', uid: doc._id})
+        }
+    })
+    
+})
+
+app.get('/logout', verifyToken ,function(req, res) {
+    delete authtokens[req.headers['x-access-token']]
     res.status(200).send({ auth: false, token: null, status: 'Logged-Out' });
 });
 

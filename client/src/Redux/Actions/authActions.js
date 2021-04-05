@@ -52,3 +52,19 @@ export const attemptLogin = (username, password) => {
         .catch((er)=> console.log(er))
     }
 }
+
+export const attemptLogout = (token) => {
+    return (dispatch) => {
+        axios.get(`${baseUrl}/logout`, {
+            headers: {
+                'x-access-token': token
+            }
+        })
+        .then((res)=>{
+            dispatch(logOut())
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+}
