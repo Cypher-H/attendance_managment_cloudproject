@@ -14,16 +14,17 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import FingerprintIcon from '@material-ui/icons/Fingerprint';
+import CreateIcon from '@material-ui/icons/Create';
+import MailIcon from '@material-ui/icons/Mail';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import AssessmentIcon from '@material-ui/icons/Assessment';
+import LabelImportantIcon from '@material-ui/icons/LabelImportant';
 import TodayIcon from '@material-ui/icons/Today';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 
 import { connect } from 'react-redux'
-import { logOut } from '../../Redux/Actions/authActions'
+import { attemptLogout } from '../../Redux/Actions/authActions'
 import { Link } from 'react-router-dom';
 
 
@@ -37,10 +38,11 @@ const useStyles = makeStyles({
   large: {
     width: 70,
     height: 70,
+    marginBottom: 20
   },
 });
 
-function StudentNav(props) {
+function AdminNav(props) {
 
 
   const classes = useStyles();
@@ -72,38 +74,36 @@ function StudentNav(props) {
                 direction='column'
                 alignItems='center'
                 >
-                  <Avatar alt="Student Name" src="/static/images/avatar/1.jpg" className={classes.large} />
-                <ListItemText  primary={'Student_Name'} />
-                <ListItemText style={{fontSize:2}}  primary={'Student_Roll'} />
-
+                  <Avatar alt="Admin Name" src="/static/images/avatar/1.jpg" className={classes.large} />
+                <ListItemText style= {{ marginBottom: 10}}  primary={'Admin_Name'} />
                 </Grid>
             </ListItem>
             <Divider />
-          <Link style={{textDecoration: 'None'}} to='/student'>
+          <Link style={{textDecoration: 'None'}} to='/Admin'>
             <ListItem button>
                 <ListItemIcon> <DashboardIcon /> </ListItemIcon>
                 <ListItemText  primary={'Dashboard'} />
             </ListItem>
           </Link>
-          <Link style={{textDecoration: 'None'}} to='/student/profile'>
+          <Link style={{textDecoration: 'None'}} to='/Admin/changepassword'>
             <ListItem button>
-                <ListItemIcon> <AccountCircleIcon /> </ListItemIcon>
-                <ListItemText primary={'Profile'} />
+                <ListItemIcon> <LockOpenIcon /> </ListItemIcon>
+                <ListItemText primary={'Change Password'} />
             </ListItem>
           </Link>
-          <Link style={{textDecoration: 'None'}} to = '/student/attendance'>
+          <Link style={{textDecoration: 'None'}} to = '/Admin/attendance'>
             <ListItem button>
-              <ListItemIcon> <FingerprintIcon /> </ListItemIcon>
-              <ListItemText primary={'Attendance'} />
+              <ListItemIcon> <CreateIcon /> </ListItemIcon>
+              <ListItemText primary={'Create User'} />
             </ListItem>
           </Link>
           <ListItem button>
             <ListItemIcon> <AssignmentIcon /> </ListItemIcon>
-            <ListItemText primary={'Assignments'} />
+            <ListItemText primary={'View User Profile'} />
           </ListItem>
           <ListItem button>
-            <ListItemIcon> <AssessmentIcon /> </ListItemIcon>
-            <ListItemText primary={'Grades'} />
+            <ListItemIcon> <MailIcon /> </ListItemIcon>
+            <ListItemText primary={'Applications'} />
           </ListItem>
       </List>
       <Divider />
@@ -113,10 +113,10 @@ function StudentNav(props) {
             <ListItemText primary={'Time Table'} />
           </ListItem>
           <ListItem button>
-            <ListItemIcon> <DirectionsRunIcon /> </ListItemIcon>
-            <ListItemText primary={'Leave Application'} />
+            <ListItemIcon> <LabelImportantIcon /> </ListItemIcon>
+            <ListItemText primary={'Group Mail'} />
           </ListItem>
-          <ListItem button onClick={()=>props.logout()}>
+          <ListItem button onClick={()=>props.logout(props.auth.token)}>
             <ListItemIcon > <ExitToAppIcon /> </ListItemIcon>
             <ListItemText primary={'Logout'} />
           </ListItem>
@@ -160,10 +160,10 @@ const matchStateToProps = (state)=>{
 
 const matchDispatchToProps = (dispatch)=>{
     return {
-        logout: (username, password)=> dispatch(logOut()),
+        logout: (token)=> dispatch(attemptLogout(token)),
     }
 }
 
-export default connect(matchStateToProps, matchDispatchToProps)(StudentNav)
+export default connect(matchStateToProps, matchDispatchToProps)(AdminNav)
 
 

@@ -16,12 +16,12 @@ import { logOut } from '../Redux/Actions/authActions'
 import Home  from './Home'
 import About from './About'
 import StudentHome from './Student/StudentHome'
+import AdminHome from "./Admin/AdminHome";
 
 
 function BaseComponent(props) {
-  
   useEffect(()=>{
-    if (props.auth.exp < Math.floor(Date.now()/1000)) {
+    if (props.auth.exp < Math.floor(Date.now()/1000) && props.auth.auth) {
         props.logOut()
     }
 })
@@ -36,7 +36,7 @@ function BaseComponent(props) {
             {() => {
               if (props.auth.auth){
                 if (props.auth.role === 'admin') {
-                  return <Redirect to='/admin' />
+                  return <Redirect to='/Admin' />
                 }
                 else if (props.auth.role === 'teacher') {
                   return <Redirect to='/teacher' />
@@ -56,8 +56,8 @@ function BaseComponent(props) {
         <Route strict path="/teacher">
           <About />
         </Route>
-        <Route strict path="/admin">
-          <About />
+        <Route strict path="/Admin">
+        {props.auth.auth?<AdminHome />: <Redirect to='/' />}
         </Route>
       </Switch>
     </Router>

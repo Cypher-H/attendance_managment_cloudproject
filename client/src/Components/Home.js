@@ -33,7 +33,6 @@ function Home(props) {
         }
     })
 
-
     const [submit, changeSubmit] = useState(false)
 
     return (
@@ -93,7 +92,8 @@ function Home(props) {
                         type='password'
                         />
                         <Typography color='error' style={{marginTop: 5 ,}}>
-                        {formik.errors.username || formik.errors.password || (submit && props.auth.status)}
+                        {formik.errors.username || formik.errors.password }
+                        {submit?(props.auth.status):null}
                         </Typography>
                         <Button 
                         color = 'primary'
