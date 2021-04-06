@@ -1,15 +1,13 @@
-import React from 'react'
-import LoginNav from './LoginNav'
+import React from "react";
+import LoginNav from "./LoginNav";
 
 function About() {
-    return (
-        <>
-        <LoginNav />
-        <div>
-            This is about page
-        </div>
-        </>
-    )
+  return (
+    <>
+      <LoginNav />
+      <div>This is about page</div>
+    </>
+  );
 }
 
-export default About
+export default About;
