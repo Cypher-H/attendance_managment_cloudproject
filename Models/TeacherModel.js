@@ -1,31 +1,28 @@
-const mongoose = require('mongoose');
-const mongooseUniqueValidator = require('mongoose-unique-validator');
-const Schema = mongoose.Schema
-
+const mongoose = require("mongoose");
+const mongooseUniqueValidator = require("mongoose-unique-validator");
+const Schema = mongoose.Schema;
 
 const Teacher = new Schema({
-    
-    name: {
-        firstname: String,
-        lastname: String
-    },
-    number: {
-        type: Number
-    },
-    email: {
-        type: String
-    },
-    userId: {
-        type: mongoose.Types.ObjectId,
-        ref: 'UserModel'
-    },
-    Subjects:{
-        type: [{ type : mongoose.Types.ObjectId, ref: 'SubjectModel' }]
-    }
-    
-})
+  name: {
+    firstname: String,
+    lastname: String,
+  },
+  number: {
+    type: Number,
+  },
+  email: {
+    type: String,
+  },
+  userId: {
+    type: mongoose.Types.ObjectId,
+    ref: "UserModel",
+  },
+  Subjects: {
+    type: [{ type: mongoose.Types.ObjectId, ref: "SubjectModel" }],
+  },
+});
 
-Teacher.plugin(mongooseUniqueValidator)
+Teacher.plugin(mongooseUniqueValidator);
 
-const TeacherModel = mongoose.model('TeacherModel', Teacher)
-module.exports = TeacherModel
+const TeacherModel = mongoose.model("TeacherModel", Teacher);
+module.exports = TeacherModel;
