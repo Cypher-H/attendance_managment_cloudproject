@@ -1,14 +1,59 @@
 require("dotenv").config();
 
 const express = require("express");
+const verifyToken = require("../verifyToken");
 const bycryptjs = require("bcryptjs");
 const authtokens = require("../authTokens");
 const UserModel = require("../Models/UserModel");
-const verifyToken = require("../verifyToken");
 var nodemailer = require("nodemailer");
 const TeacherModel = require("../Models/TeacherModel");
 const StudentModel = require("../Models/StudentModel");
 const isEmailValid = require("../ReqFunctions/isEmailValid");
+
+const multer = require('multer')
+var multerS3 = require('multer-s3')
+const isAdmin = require('../ReqFunctions/userType')
+
+
+const AWS = require('aws-sdk');
+const RoutineModel = require("../Models/routine");
+
+const ID = process.env.AWS_ID;
+const SECRET = process.env.AWS_SECRET;
+
+// The name of the bucket that you have created
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
+
+const s3 = new AWS.S3({
+    accessKeyId: ID,
+    secretAccessKey: SECRET
+});
+
+const multerConf = {
+  storage : multerS3({
+      s3: s3,
+      bucket: BUCKET_NAME,
+      acl: 'public-read',
+      metadata: function (req, file, cb) {
+          cb(null, {fieldName: file.fieldname});
+        },
+        key: function (req, file, cb) {
+          cb(null, file.originalname)
+      }
+  }),
+  fileFilter : function(req, file, next){
+      if (!file){
+          next();
+      }
+      const image = file.mimetype.startsWith('image/');
+      if (image){
+          //uploadFile(file)
+          next(null, true)
+      }else{
+          next({message: "File type not supported"}, false);
+      }
+  },
+}
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -24,9 +69,17 @@ app.post("/createTeacher", verifyToken, (req, res, next) => {
   const user = authtokens[req.headers["x-access-token"]];
   if (user.type === "admin") {
     // create teacher profile
-    const { name, number, email } = req.body;
+    const {
+      name,
+      number,
+      email
+    } = req.body;
 
-    isEmailValid(email).then(({ wellFormed, validDomain, validMailbox }) => {
+    isEmailValid(email).then(({
+      wellFormed,
+      validDomain,
+      validMailbox
+    }) => {
       console.log(wellFormed, validDomain, validMailbox);
       if (
         name !== null &&
@@ -70,8 +123,7 @@ app.post("/createTeacher", verifyToken, (req, res, next) => {
                   userId: doc._id,
                 }).then((doc2) => {
                   res.json({
-                    message:
-                      "Teacher user created successfully and email has been sent to the student",
+                    message: "Teacher user created successfully and email has been sent to the student",
                     success: true,
                   });
                 });
@@ -111,9 +163,19 @@ app.post("/createStudent", verifyToken, (req, res, next) => {
   console.log(user);
   if (user.type === "admin" || user.type === "teacher") {
     // create student profile
-    const { name, number, email, id } = req.body;
+    const {
+      name,
+      number,
+      email,
+      id,
+      rfid
+    } = req.body;
 
-    isEmailValid(email).then(({ wellFormed, validDomain, validMailbox }) => {
+    isEmailValid(email).then(({
+      wellFormed,
+      validDomain,
+      validMailbox
+    }) => {
       console.log(wellFormed, validDomain, validMailbox);
       if (
         name !== null &&
@@ -156,11 +218,11 @@ app.post("/createStudent", verifyToken, (req, res, next) => {
                   number: number,
                   email: email,
                   idnumber: id,
+                  rfid: rfid,
                   userId: doc._id,
                 }).then((doc2) => {
                   res.json({
-                    message:
-                      "Student user created successfully and email has been sent to the student",
+                    message: "Student user created successfully and email has been sent to the student",
                     success: true,
                   });
                 });
@@ -195,5 +257,52 @@ app.post("/createStudent", verifyToken, (req, res, next) => {
     });
   }
 });
+
+app.get('/profile', (req, res, next)=>{
+  const user = authtokens[req.headers['x-access-token']]
+  console.log(user)
+  if (user.type === 'admin') {
+    UserModel.findById(user.id)
+    .then((doc)=>{
+      res.json({message: "success", username: doc.username, roll_no: "", email: '', phone_no: "", subjects: [], url: ''})
+    })
+    .catch((err)=>{
+      res.json({message: "User not found// try restarting",})
+    })
+  } 
+  else if (user.type === 'teacher') {
+    TeacherModel.findOne({userId: user.id})
+    .then((doc)=>{
+      res.json({message: "success", username: doc.name, roll_no: "", email: doc.email, phone_no: doc.number, subjects: doc.Subjects, url: ''})
+    })
+    .catch((err)=>{
+      res.json({message: "User not found// try restarting",})
+    })
+  } 
+  else if (user.type === 'student') {
+    StudentModel.findOne({userId: user.id})
+    .then((doc)=>{
+      res.json({message: "success", username: doc.name, roll_no: doc.idnumber, email: doc.email, phone_no: doc.number, subjects: doc.Subjects, url: doc.url})
+    })
+    .catch((err)=>{
+      res.json({message: "User not found// try restarting",})
+    })
+  } 
+})
+
+app.post('/setprofile', verifyToken, multer(multerConf).single('file'), (req, res, next)=>{
+  const user = authtokens[req.headers['x-access-token']]
+  console.log(req)
+  StudentModel.findOneAndUpdate({userId: user.id}, {
+    url: req.file.location
+  })
+  .then((doc)=>{
+    res.json({message: 'Profile Picture Updated Successfully'})
+  })
+  .catch((err)=>{
+    res.json({message: 'Something went wrong'})
+  })
+
+})
 
 module.exports = app;

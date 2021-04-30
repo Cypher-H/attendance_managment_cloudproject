@@ -7,6 +7,7 @@ const Subject = new Schema({
   Credit: Number,
   Teacher: {
     type: mongoose.Types.ObjectId,
+    ref: "TeacherModel"
   },
   Students: {
     type: [{ type: mongoose.Types.ObjectId, ref: "StudentModel" }],

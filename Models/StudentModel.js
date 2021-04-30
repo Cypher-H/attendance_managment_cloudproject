@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 
 const Student = new Schema({
   name: {
-    firstname: String,
-    lastname: String,
+    type: String,
   },
   number: {
     type: Number,
@@ -19,6 +18,12 @@ const Student = new Schema({
   userId: {
     type: mongoose.Types.ObjectId,
     ref: "UserModel",
+  },
+  rfid: {
+    type: Number
+  },
+  url: {
+    type: String
   },
   Subjects: {
     type: [{ type: mongoose.Types.ObjectId, ref: "SubjectModel" }],

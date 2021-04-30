@@ -10,6 +10,11 @@ const app = express();
 
 const authRouter = require("./auth");
 const userCreate = require("./Routes/userCreate");
+const subjectRouter = require("./Routes/subjectRoute")
+const teacherRouter = require("./Routes/teacherRoute")
+const attendanceRouter = require("./Routes/attendanceRoute")
+const enrollmentRouter = require("./Routes/EnrollmentRoute")
+
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -33,6 +38,10 @@ app.get("/", verifyToken, (req, res, next) => {
 
 app.use("/", authRouter);
 app.use("/", userCreate);
+app.use("/", subjectRouter);
+app.use("/", teacherRouter);
+app.use("/", attendanceRouter);
+app.use("/", enrollmentRouter);
 
 app.listen(config.PORT, () => {
   console.log(`Server running at ${config.PORT}`);
