@@ -1,16 +1,22 @@
+import { Grid } from "@material-ui/core";
 import React from "react";
 import { connect } from "react-redux";
 import { Switch, Route } from "react-router-dom";
+import Timetable from "../Timetable";
+import AdminAttendance from "./AdminAttendance";
 import AdminChangePassword from "./AdminChangePassword";
 import AdminCreateUser from "./AdminCreateUser";
 import AdminDashboard from "./AdminDashboard";
 import AdminNav from "./AdminNav";
+import ManageSubject from "./ManageSubject";
 
 function AdminHome(props) {
   return (
-    <div>
+    <Grid container
+    direction="row"
+    >
       <AdminNav />
-      This is Admin home page token expiry {props.auth.exp}
+      <Grid style={{marginTop: 90}}>
       <Switch>
         <Route exact path="/Admin">
           <AdminDashboard />
@@ -21,8 +27,18 @@ function AdminHome(props) {
         <Route path="/Admin/changepassword">
           <AdminChangePassword />
         </Route>
+        <Route path="/Admin/managesubject">
+          <ManageSubject />
+        </Route>
+        <Route path="/Admin/routine">
+          <Timetable />
+        </Route>
+        <Route path="/Admin/attendance">
+          <AdminAttendance />
+        </Route>
       </Switch>
-    </div>
+      </Grid>
+    </Grid>
   );
 }
 

@@ -15,6 +15,7 @@ import Home from "./Home";
 import About from "./About";
 import StudentHome from "./Student/StudentHome";
 import AdminHome from "./Admin/AdminHome";
+import TeacherHome from "./Teacher/TeacherHome";
 
 function BaseComponent(props) {
   useEffect(() => {
@@ -48,7 +49,7 @@ function BaseComponent(props) {
           {props.auth.auth ? <StudentHome /> : <Redirect to="/" />}
         </Route>
         <Route strict path="/teacher">
-          <About />
+          {props.auth.auth ? <TeacherHome /> : <Redirect to="/" />}
         </Route>
         <Route strict path="/Admin">
           {props.auth.auth ? <AdminHome /> : <Redirect to="/" />}

@@ -1,110 +1,194 @@
-import React, { Component } from "react";
-import {
-  AreaChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Area,
-} from "recharts";
+import React, {useState, useEffect} from 'react'
+import { Paper, Typography, CircularProgress, Box } from '@material-ui/core'
+import { connect } from 'react-redux';
+import axios from 'axios'
+import { baseUrl } from '../../config'
 
-class StudentDashboard extends Component {
-  data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
-
-  render() {
-    return (
-      <div ref="canvas">
-        <AreaChart
-          width={730}
-          height={250}
-          data={this.data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <defs>
-            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#00ff00" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#00fff0" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <CartesianGrid strokeDasharray="3 3" />
-          <Tooltip />
-          <Area
-            type="monotone"
-            dataKey="uv"
-            stroke="#8884d8"
-            fillOpacity={1}
-            fill="url(#colorUv)"
-          />
-          <Area
-            type="monotone"
-            dataKey="pv"
-            stroke="#82ca9d"
-            fillOpacity={1}
-            fill="url(#colorPv)"
-          />
-          <Area
-            type="monotone"
-            dataKey="amt"
-            stroke="#00ff00"
-            fillOpacity={1}
-            fill="url(#colorAmt)"
-          />
-        </AreaChart>
+const ImgUpload =({
+  onChange,
+  src,
+})=>{
+  return(
+    <label for="photo-upload" className="custom-file-upload fas">
+      <div className="img-wrap img-upload" >
+        <img for="photo-upload" height='100' src={src}/>
       </div>
-    );
+      <input id="photo-upload" type="file" onChange={onChange}/> 
+    </label>
+  );
+}
+
+
+const Profile =({
+  onSubmit,
+  src,
+  name,
+  status,
+})=>{
+  return(
+   <div className="card">
+    <form onSubmit={onSubmit}>
+      <h1>Student Dashboard</h1>
+      <label className="custom-file-upload fas">
+        <div className="img-wrap" >
+          <img for="photo-upload" height={100} src={src}/>
+        </div>
+      </label>
+      <div className="name">{name}</div>
+      <div className="status">{status}</div>
+      <button type="submit" className="edit">Edit Profile </button>
+    </form>
+   </div>
+  );
+}
+      
+const Edit =({
+  onSubmit,
+  children,
+})=>{
+  return(
+    <div className="card">
+      <form onSubmit={onSubmit}>
+        <h1>Student Dashboard</h1>
+        {children}
+        <button type="submit" className="save">Save </button>
+      </form>
+    </div>
+  );
+}
+
+function CircularProgressWithLabel(props) {
+
+  const [progress, setProgress] = useState(0)
+
+  useEffect(()=>{
+    axios.get(`${baseUrl}/attendance`, {
+      headers: {
+        'x-access-token': props.auth.token
+      }
+    })
+    .then((res)=>{
+      axios.get(`${baseUrl}/uniqueAttendance`, {
+        headers: {
+          'x-access-token': props.auth.token
+        }
+      })
+      .then((res1)=>{
+        let temp = 0
+        res1.data.days.forEach((val)=>{
+          temp+=res.data.attendance.filter((val1)=>val1.date == val).length
+        })
+        setProgress((temp/res1.data.days.length)*100)
+
+      })
+    })
+  }, [])
+
+  return (
+    <Box position="relative" display="inline-flex">
+      <CircularProgress variant="determinate" value={progress} />
+      <Box
+        top={0}
+        left={0}
+        bottom={0}
+        right={0}
+        position="absolute"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Typography variant="caption" component="div" color="textSecondary">{`${Math.round(
+          progress,
+        )}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+
+class StudentDashboard extends React.Component {
+  constructor(props) {
+    super(props);
+     this.state = {
+       file: '',
+       imagePreviewUrl: this.props.profile.url,
+       name:'',
+       status:'',
+       active: 'edit'
+    };
+  }
+  photoUpload (e) {
+    e.preventDefault();
+    const reader = new FileReader();
+    const file = e.target.files[0];
+    reader.onloadend = () => {
+      this.setState({
+        file: file,
+        imagePreviewUrl: reader.result
+      });
+    }
+    reader.readAsDataURL(file);
+
+  }
+  
+  handleSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(); 
+     
+        // Update the formData object 
+        if (this.state.active === 'edit' & this.state.file !== '') {
+          formData.append( 
+            "file", 
+            this.state.file, 
+          );
+    
+          axios.post(`${baseUrl}/setprofile`, formData,{
+            headers: {
+              'x-access-token': this.props.auth.token
+            }
+          })
+          .then((res)=>{
+            console.log('ok')
+          })
+        }
+        
+    let activeP = this.state.active === 'edit' ? 'profile' : 'edit';
+    this.setState({
+      active: activeP,
+    })
+  }
+  
+  render() {
+    console.log(this.props.profile)
+    const {imagePreviewUrl, 
+           name, 
+           status, 
+           active} = this.state;
+    return (
+      <Paper style={{marginLeft: 260, padding: 10, paddingRight: 0}}>
+      <div >
+        {(active === 'edit')  
+          ?<Edit onSubmit={(e)=>this.handleSubmit(e)}>
+              <ImgUpload onChange={(e)=>this.photoUpload(e)} src={imagePreviewUrl}/>
+            </Edit>
+          :<Profile onSubmit={(e)=>this.handleSubmit(e)} src={imagePreviewUrl} name={name} status={status}/>}
+          <Typography style={{fontWeight: 900, padding: 2}} variant='body1'>Name: <Typography style={{fontWeight: 400}} noWrap={true} variant='inherit'>{this.props.profile.username}</Typography></Typography>
+          <Typography style={{fontWeight: 900, padding: 2}} variant='body1'>EnrollmentId: <Typography style={{fontWeight: 400}} noWrap={true} variant='inherit'>{this.props.profile.roll_no}</Typography></Typography>
+          <Typography style={{fontWeight: 900, padding: 2}} variant='body1'>Phone Number: <Typography style={{fontWeight: 400}} noWrap={true} variant='inherit'>{this.props.profile.phone_no}</Typography></Typography>
+          <Typography style={{fontWeight: 900, padding: 2}} variant='body1'>Email: <Typography style={{fontWeight: 400}} noWrap={true} variant='inherit'>{this.props.profile.email}</Typography></Typography>
+      </div>
+      <h2>Attendance Progress</h2>
+      <CircularProgressWithLabel {...this.props} value={20} />  
+      </Paper>
+    )
   }
 }
-export default StudentDashboard;
+
+const matchStateToProps = (state) => {
+  return {
+    auth: state.auth,
+    profile: state.profile
+  };
+};
+
+
+export default connect(matchStateToProps)(StudentDashboard)
