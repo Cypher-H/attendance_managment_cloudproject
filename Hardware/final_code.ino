@@ -28,7 +28,7 @@ const char *ssid = "tendaa";
 const char *password = "yash11oct547@";
 
 //Web/Server address to read/write from 
-const char *host = "http://135a008ca1b8.ngrok.io/honey";
+const char *host = "http://13.231.178.209:5000/markAttendance";
 
 //=======================================================================
 //                    Power on setup
@@ -58,7 +58,7 @@ void loop() {
       return;
     }
   else{
-    http.begin("http://135a008ca1b8.ngrok.io/honey");       //Specify request destination
+    http.begin(host);       //Specify request destination
     http.addHeader("Content-Type", "application/json");    //Specify content-type header
   
     int httpCode = http.POST("{\"date\":"+date+",\"day\":"+dow+",\"time\":"+tym+",\"uid\":"+uid+"}");   //Send the request
@@ -120,6 +120,7 @@ void connectwifi(){
     for (byte i = 0; i < 4; i++) {
       tag += rfid.uid.uidByte[i];
     }
+    Serial.println(tag);
     return tag;
     rfid.PICC_HaltA();
     rfid.PCD_StopCrypto1();
