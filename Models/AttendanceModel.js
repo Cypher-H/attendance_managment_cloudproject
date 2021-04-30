@@ -3,17 +3,19 @@ const mongooseUniqueValidator = require("mongoose-unique-validator");
 const Schema = mongoose.Schema;
 
 const Attendance = new Schema({
-  mark: Number,
-  date: Date,
-  Subject: {
-    type: mongoose.Types.ObjectId,
-    ref: "SubjectModel",
+  date: {
+    type: String,
+    required: true,
   },
+  day: String,
+  time: String,
   Student: {
     type: mongoose.Types.ObjectId,
     ref: "StudentModel",
   },
 });
+
+Attendance.index({Student: 1, date: 1}, { unique: false})
 
 Attendance.plugin(mongooseUniqueValidator);
 

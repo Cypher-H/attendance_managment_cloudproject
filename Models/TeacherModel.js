@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 
 const Teacher = new Schema({
   name: {
-    firstname: String,
-    lastname: String,
+    type: String,
   },
   number: {
     type: Number,

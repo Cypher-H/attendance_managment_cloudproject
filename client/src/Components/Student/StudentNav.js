@@ -76,12 +76,15 @@ function StudentNav(props) {
         <ListItem>
           <Grid container direction="column" alignItems="center">
             <Avatar
-              alt="Student Name"
+              alt={props.profile.username}
               src="/static/images/avatar/1.jpg"
               className={classes.large}
             />
-            <ListItemText primary={"Student_Name"} />
-            <ListItemText style={{ fontSize: 2 }} primary={"Student_Roll"} />
+            <ListItemText primary={props.profile.username} />
+            <ListItemText style={{ fontSize: 2 }} secondary={props.profile.email} />
+            <ListItemText style={{ fontSize: 10 }} secondary={props.profile.roll_no} />
+            <ListItemText style={{ fontSize: 2 }} secondary={props.profile.phone_no} />
+
           </Grid>
         </ListItem>
         <Divider />
@@ -94,13 +97,13 @@ function StudentNav(props) {
             <ListItemText primary={"Dashboard"} />
           </ListItem>
         </Link>
-        <Link style={{ textDecoration: "None" }} to="/student/profile">
+        <Link style={{ textDecoration: "None" }} to="/student/changepassword">
           <ListItem button>
             <ListItemIcon>
               {" "}
               <AccountCircleIcon />{" "}
             </ListItemIcon>
-            <ListItemText primary={"Profile"} />
+            <ListItemText primary={"Change Password"} />
           </ListItem>
         </Link>
         <Link style={{ textDecoration: "None" }} to="/student/attendance">
@@ -119,16 +122,19 @@ function StudentNav(props) {
           </ListItemIcon>
           <ListItemText primary={"Assignments"} />
         </ListItem>
+        <Link style={{ textDecoration: "None" }} to="/student/reqenroll">
         <ListItem button>
           <ListItemIcon>
             {" "}
             <AssessmentIcon />{" "}
           </ListItemIcon>
-          <ListItemText primary={"Grades"} />
+          <ListItemText primary={"Request Enroll"} />
         </ListItem>
+        </Link>
       </List>
       <Divider />
       <List>
+      <Link style={{ textDecoration: "None" }} to="/student/routine">
         <ListItem button>
           <ListItemIcon>
             {" "}
@@ -136,6 +142,7 @@ function StudentNav(props) {
           </ListItemIcon>
           <ListItemText primary={"Time Table"} />
         </ListItem>
+        </Link>
         <ListItem button>
           <ListItemIcon>
             {" "}
@@ -156,6 +163,10 @@ function StudentNav(props) {
   return (
     <div>
       <React.Fragment key={anchor.direction}>
+        <Grid   style={{
+    width: `calc(100% - 240px)`,
+    marginLeft: 240,
+  }}>
         <AppBar position="sticky">
           <Toolbar>
             <Grid
@@ -164,29 +175,21 @@ function StudentNav(props) {
               justify="space-between"
               alignItems="center"
             >
-              <Grid>
-                <IconButton
-                  edge="start"
-                  color="inherit"
-                  onClick={toggleDrawer(anchor.direction, true)}
-                  aria-label="menu"
-                >
-                  <ListIcon />
-                </IconButton>
                 <Typography display="inline" variant="h6">
                   Attendance Management System
                 </Typography>
-              </Grid>
-              <Drawer
+            </Grid>
+          </Toolbar>
+        </AppBar>
+        </Grid>
+        <Drawer
                 anchor={anchor.direction}
+                variant='permanent'
                 open={anchor[anchor.direction]}
                 onClose={toggleDrawer(anchor.direction, false)}
               >
                 {list(anchor.direction)}
               </Drawer>
-            </Grid>
-          </Toolbar>
-        </AppBar>
       </React.Fragment>
     </div>
   );
@@ -195,6 +198,7 @@ function StudentNav(props) {
 const matchStateToProps = (state) => {
   return {
     auth: state.auth,
+    profile: state.profile
   };
 };
 

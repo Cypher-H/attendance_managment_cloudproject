@@ -47,7 +47,7 @@ const useStyles = makeStyles({
   },
 });
 
-function AdminNav(props) {
+function TeacherNav(props) {
   const classes = useStyles();
   const [anchor, setState] = React.useState({
     open: false,
@@ -83,10 +83,12 @@ function AdminNav(props) {
               className={classes.large}
             />
             <ListItemText style={{ marginBottom: 10 }} primary={props.profile.username} />
+            <ListItemText style={{ fontSize: 2 }} secondary={props.profile.email} />
+            <ListItemText style={{ fontSize: 2 }} secondary={props.profile.phone_no} />
           </Grid>
         </ListItem>
         <Divider />
-        <Link style={{ textDecoration: "None" }} to="/Admin">
+        <Link style={{ textDecoration: "None" }} to="/Teacher">
           <ListItem button>
             <ListItemIcon>
               {" "}
@@ -95,7 +97,7 @@ function AdminNav(props) {
             <ListItemText primary={"Dashboard"} />
           </ListItem>
         </Link>
-        <Link style={{ textDecoration: "None" }} to="/Admin/changepassword">
+        <Link style={{ textDecoration: "None" }} to="/Teacher/changepassword">
           <ListItem button>
             <ListItemIcon>
               {" "}
@@ -104,16 +106,16 @@ function AdminNav(props) {
             <ListItemText primary={"Change Password"} />
           </ListItem>
         </Link>
-        <Link style={{ textDecoration: "None" }} to="/Admin/createuser">
+        <Link style={{ textDecoration: "None" }} to="/Teacher/enrollment">
           <ListItem button>
             <ListItemIcon>
               {" "}
               <CreateIcon />{" "}
             </ListItemIcon>
-            <ListItemText primary={"Create User"} />
+            <ListItemText primary={"Enrollment Requests"} />
           </ListItem>
         </Link>
-        <Link style={{ textDecoration: "None" }} to="/Admin/managesubject">
+        <Link style={{ textDecoration: "None" }} to="/Teacher/managesubject">
         <ListItem button>
           <ListItemIcon>
             {" "}
@@ -122,19 +124,20 @@ function AdminNav(props) {
           <ListItemText primary={"Manage Subjects"} />
         </ListItem>
         </Link>
-        <Link style={{ textDecoration: "None" }} to="/Admin/attendance">
+        <Link style={{ textDecoration: "None" }} to="/Teacher/details">
         <ListItem button>
           <ListItemIcon>
             {" "}
             <MailIcon />{" "}
           </ListItemIcon>
-          <ListItemText primary={"Student Profile"} />
+          <ListItemText primary={"Student Details"} />
         </ListItem>
         </Link>
       </List>
+
       <Divider />
       <List>
-      <Link style={{ textDecoration: "None" }} to="/Admin/routine">
+      <Link style={{ textDecoration: "None" }} to="/Teacher/routine">
         <ListItem button>
           <ListItemIcon>
             {" "}
@@ -225,4 +228,4 @@ const matchDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(matchStateToProps, matchDispatchToProps)(AdminNav);
+export default connect(matchStateToProps, matchDispatchToProps)(TeacherNav);

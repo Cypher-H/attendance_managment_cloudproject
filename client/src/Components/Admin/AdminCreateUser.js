@@ -59,7 +59,7 @@ export default function AdminCreateUser() {
 
   return (
     <div className={classes.root}>
-      <AppBar color="secondary" position="static">
+      <AppBar color="primary" style={{height: 65}} position="fixed">
         <Tabs
           value={value}
           onChange={handleChange}

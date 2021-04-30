@@ -28,6 +28,7 @@ function AddStudent(props) {
       Number: "",
       Email: "",
       EnrollId: "",
+      Rfid: ""
     },
     validationSchema: Yup.object({
       Name: Yup.string().required("Name is required"),
@@ -41,6 +42,7 @@ function AddStudent(props) {
         .email("Please provide a proper email")
         .required("Email is required"),
       EnrollId: Yup.string().required("Enrollment Id is required"),
+      Rfid: Yup.number().required("RFID is required"),
     }),
     onSubmit: (values) => {
       handleClickOpen();
@@ -53,6 +55,7 @@ function AddStudent(props) {
             number: values.Number,
             email: values.Email,
             id: values.EnrollId,
+            rfid: values.Rfid
           },
           {
             headers: {
@@ -85,11 +88,12 @@ function AddStudent(props) {
       Number: "",
       Email: "",
       EnrollId: "",
+      Rfid: ""
     });
   };
 
   return (
-    <div>
+    <div style={{marginLeft: 240}}>
       <ServerDialog
         handleClickOpen={handleClickOpen}
         handleClose={handleClose}
@@ -157,6 +161,20 @@ function AddStudent(props) {
                 />
               </FormControl>
             </Grid>
+
+            <Grid lg={6} md={6} sm={12} xs={12} item>
+              <FormControl style={{ margin: 5 }}>
+                <InputLabel htmlFor="standard-new-id">RFID</InputLabel>
+
+                <Input
+                  id="standard-new-id"
+                  type={"text"}
+                  value={formik.values.Rfid}
+                  onChange={formik.handleChange("Rfid")}
+                  endAdornment={<PermIdentityIcon />}
+                />
+              </FormControl>
+            </Grid>
           </Grid>
           <Typography
             color="error"
@@ -165,7 +183,8 @@ function AddStudent(props) {
             {formik.errors.Name ||
               formik.errors.Number ||
               formik.errors.Email ||
-              formik.errors.EnrollId}
+              formik.errors.EnrollId ||
+              formik.errors.Rfid}
           </Typography>
           <div style={{ textAlign: "center", marginTop: 20 }}>
             <Button

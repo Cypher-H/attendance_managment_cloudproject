@@ -6,14 +6,15 @@ import storage from "redux-persist/lib/storage";
 import { composeWithDevTools } from "redux-devtools-extension";
 
 import { authReducer } from "./Reducers/authReducer";
+import { profileReducer } from "./Reducers/profileReducer";
 
 const persistConfig = {
   key: "root",
   storage: storage,
-  whitelist: ["auth"],
+  whitelist: ["auth", "profile"],
 };
 
-const rootReducers = combineReducers({ auth: authReducer });
+const rootReducers = combineReducers({ auth: authReducer, profile: profileReducer });
 
 const pReducer = persistReducer(persistConfig, rootReducers);
 
