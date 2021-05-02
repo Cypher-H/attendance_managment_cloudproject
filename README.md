@@ -6,6 +6,11 @@
 
 <hr>
 
+## Circuit diagaram
+
+![Hardware](https://user-images.githubusercontent.com/51120790/116812719-e499c600-ab6d-11eb-83e8-a7a0fe0b4aab.png)
+
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people. 👩🏻‍💻
